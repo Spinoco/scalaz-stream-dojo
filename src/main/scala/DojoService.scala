@@ -18,11 +18,13 @@ import scala.concurrent.duration._
       (you can use 'authenticate' function to check if password is correct)
    - emit 'UserLoggedOut' if and only if user already logged in
 
-  the result you should expect when your code is correct is defiend in val 'expectedResult'
+  the result you should expect when your code is correct is defined in val 'expectedResult'
 
   When you are done, what you can do is to use `fileWithRequests` instead of `requests` as input for your service. There
   are some helper functions in scalaz library for working with input streams that might help you out. Notice how little code you
   have to change to swap things around.
+
+  If you have even more time, you can try to save all the messages from our service into some file.
  */
 
 trait Request
@@ -35,9 +37,14 @@ case class UserLoggedOut(userName: String) extends Response
 
 object DojoService {
   import Utils._
+  //helper function for authenticating users
   def authenticate(username: String, pass: String): Boolean = passwords.get(username).map(_ == pass).getOrElse(false)
+  //helper function for parsing messages from the stream
   val parseRequests: (String) => Request = parseRequestsHelper _
+  //file for testing (when you are done with in-memory representation)
   val fileWithRequests = this.getClass.getResourceAsStream("/testData.txt")
+
+  //request for our service
   val requests: Process[Task, String] = mockRequests
 
   val expectedResult = Vector(

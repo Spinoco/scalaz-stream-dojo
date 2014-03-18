@@ -50,7 +50,7 @@ trait Dojo {
 
     Use flatMap for that. To halt the stream you can use `halt` helper function.
 
-    TODO using 'sampleInput2' create a stream that will all positive or zero messages until first negative
+    TODO using 'sampleInput2' create a stream that will emit all positive or zero messages until first negative
    */
 
   val sampleInput2 = emitSeq(List(1,2,3,0,2,-1,1,2)).toSource
@@ -67,20 +67,20 @@ trait Dojo {
 
     Process1 takes two type parameters, I and O, and it basically is a transformation from I to O.
 
-    To create a process1, you can use method await[A], which creates a Process1[A,A]. All it does is that it awaits for 1 value.
+    To create a process1, you can use method await1[A], which creates a Process1[A,A]. All it does is that it awaits for 1 value.
     It has a map and flatMap method which gives you the ability to transform the accumulated I into O.
 
     By default, process1 halts after receiving 1 element. You can, however, use it's repeat method to make it run as long as there
      are any input values available.
 
-    TODO create a process1 that will await ints and emit squares. Then pipe messages from 'sampleInput3' into that process1
+    TODO create a process1 that will await int and emit square. Then make it repeatable. Then pipe messages from 'sampleInput3' into that process1
    */
 
   val sampleInput3 = emitSeq((0 to 10).toList).toSource
 
   def p1Squares: Process1[Int,Int] = ???
   def p1SquaresRepeated: Process1[Int, Int] = ???
-  def squaresStream = sampleInput3 |> p1SquaresRepeated
+  def squaresStream = ???
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -95,14 +95,12 @@ trait Dojo {
      TODO create process1 `p` such that it will emit ints as long as they are positive and halts upon receiving first negative one
      TODO make sure you use fby combinator, don't use repeat
 
-     hint: recursion is your friend
-
-   */
+  */
 
   val sampleInput4 = emitSeq(List(1,2,3,4,-1,-2,-3,1)).toSource
   def p: Process1[Int, Int] = ???
 
-  def combinedProcesses = sampleInput4 |> p
+  def combinedProcesses = ???
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -120,7 +118,7 @@ trait Dojo {
 
   def indexer: Process1[String, (Int, String)] = ???
 
-  def statefulProcess1 = sampleInput5 |> indexer
+  def statefulProcess1 = ???
 
   /*
 
