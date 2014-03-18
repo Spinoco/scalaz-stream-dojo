@@ -42,7 +42,6 @@ object DojoService {
 
   val requests: Process[Task, String] = mockRequests
 
-
   val expectedResult = Vector(
     UserLoggedIn("lister"),
     UserLoggedIn("cat"),
@@ -69,7 +68,7 @@ object DojoService {
       case r: UserLogout => logout(r, s)
     }
 
-    def doNothing(s: ServiceState) = emitSeq(List.empty[Response]) fby process(s)
+    def doNothing(s: ServiceState) = process(s)
 
     def login(req: UserLogin, s: ServiceState) = {
       if(s.loggedUsers.contains(req.userName)) {

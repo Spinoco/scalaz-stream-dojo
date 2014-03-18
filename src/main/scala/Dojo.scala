@@ -50,7 +50,7 @@ trait Dojo {
 
   /*
     Cool. Now lets assume we want to take all the inputs from `sampleInput2` defined below, as long as the
-    values are non-negative. In other words, we want emit messages untill we find one below 0, then we want to halt the stream.
+    values are non-negative. In other words, we want emit messages until we find one below 0, then we want to halt the stream.
 
     Use flatMap for that. To halt the stream you can use `halt` helper function.
 

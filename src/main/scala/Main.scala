@@ -10,7 +10,7 @@ object Main extends App {
 
 
   println(" >> Running process")
-  def processToRun = userStateProcess
+  def processToRun = simpleStream
 
   val result = processToRun.runLog.run
 
