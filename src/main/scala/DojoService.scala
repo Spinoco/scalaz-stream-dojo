@@ -10,8 +10,6 @@ import Process._
   to build something more interesting. Lets imagine we have a process of events that indicate user actions. We want to build
   a service that will process these events and react to them.
 
-  hint: you can use
-
   TODO given process of events from `userEvents`, create a process that will:
    - parse strings into case classes (you can use parseRequests helper function)
    - emit 'UserLoggedIn' if password from UserLogin is correct for given user AND user is not already logged in
@@ -47,7 +45,7 @@ object DojoService {
     UserLoggedOut("cat")
   )
 
-  val parsedRequests: Process[Task, Request] = mockRequests.map(parseRequests)
+  val parsedRequests: Process[Task, Request] = mockRequests.map(parseRequests) // ???
   val userStateProcess: Process[Task, Response] = parsedRequests |> state(State(Set.empty))
 
 

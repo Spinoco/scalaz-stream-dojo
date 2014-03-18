@@ -12,7 +12,6 @@ import scala.util.Random
 object Dojo extends Dojo
 
 trait Dojo {
-  type Res = String
 
   /*
     The most basic type of process is one that will emit single element and then halts.
@@ -51,7 +50,7 @@ trait Dojo {
 
   /*
     Cool. Now lets assume we want to take all the inputs from `sampleInput2` defined below, as long as the
-    values are non-negative. In other words, we want to halt the process if find a value below 0.
+    values are non-negative. In other words, we want emit messages untill we find one below 0, then we want to halt the stream.
 
     Use flatMap for that. To halt the stream you can use `halt` helper function.
 
@@ -68,7 +67,7 @@ trait Dojo {
 
 
   /*
-    Ok, until now, we have been simply modifying streams we already have. Now lets learn how to compose stream.
+    Ok, until now, we have been simply modifying streams. Now lets learn how to compose stream.
 
     You can take a process and run it's content through a `pipe` method (or it's alias `|>`), which takes something called 'process1'.
 
@@ -86,7 +85,7 @@ trait Dojo {
   val sampleInput3 = emitSeq((0 to 10).toList).toSource
 
   val p1Squares: Process1[Int,Int] = await1.map(a => a*a) // = ???
-  val p1SquaresRepeated: Process1[Int, Int] = p1Squares.repeat
+  val p1SquaresRepeated: Process1[Int, Int] = p1Squares.repeat // = ???
   val squaresStream = sampleInput3 |> p1SquaresRepeated
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,10 +93,10 @@ trait Dojo {
   /*
     Now that we know about process1 and piping, we should learn about another cool thing about processes. It is possible to
     define process1 by composing two processes1. For example, given two processes p1 and p2, you can define new process that
-     will do whatever p1 does and once p1 halts, it will do whatever p2 does. You can use `fby` (short for follow by) operator
+     will do whatever p1 does and once p1 halts, it will do whatever p2 does. You can use `fby` (short for 'follow by') operator
      on process1 to implement this behavior.
 
-    This is very powerful, and later on you will see how we can use this to implement pretty cool things.
+    This is very powerful as we will see later when implementing DojoService.
 
      TODO create process1 `p` such that it will emit ints as long as they are positive and halts upon receiving first negative one
      TODO make sure you use fby combinator, don't use repeat
