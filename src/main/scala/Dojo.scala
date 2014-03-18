@@ -15,9 +15,6 @@ trait Dojo {
 
     emit has following type: emit[O](o: O): Process[Nothing, O]
 
-    however, we will often need process of type Process[Task, O]. To do that, you can
-    use .toSource method which will return same process, but with correct type signature.
-
     TODO create a process that will emit a string
 
     you can run the process in the Main.scala
