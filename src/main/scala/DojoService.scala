@@ -38,8 +38,6 @@ object DojoService {
   def authenticate(username: String, pass: String): Boolean = passwords.get(username).map(_ == pass).getOrElse(false)
   val parseRequests: (String) => Request = parseRequestsHelper _
   val fileWithRequests = this.getClass.getResourceAsStream("/testData.txt")
-
-
   val requests: Process[Task, String] = mockRequests
 
   val expectedResult = Vector(
@@ -51,39 +49,8 @@ object DojoService {
     UserLoggedOut("cat")
   )
 
-  val parsedRequests: Process[Task, Request] = requests.map(parseRequests) // ???
+  def parsedRequests: Process[Task, Request] = ???
 
-  val userStateProcess: Process[Task, Response] = parsedRequests.collect {
-      case m @ UserLogin(uname, upass) if authenticate(uname, upass) => m
-      case m: UserLogout => m
-    } |> ServiceState.process(ServiceState(Set.empty)) // ???
-
-
-  case class ServiceState(loggedUsers: Set[String])
-
-  object ServiceState {
-
-    def process(s: ServiceState): Process1[Request, Response] = await1[Request].flatMap {
-      case r: UserLogin =>  login(r, s)
-      case r: UserLogout => logout(r, s)
-    }
-
-    def doNothing(s: ServiceState) = process(s)
-
-    def login(req: UserLogin, s: ServiceState) = {
-      if(s.loggedUsers.contains(req.userName)) {
-        doNothing(s)
-      } else {
-        emitSeq(List(UserLoggedIn(req.userName))) fby process(ServiceState(s.loggedUsers + req.userName))
-      }
-    }
-    def logout(req: UserLogout, s: ServiceState) = {
-      if(s.loggedUsers.contains(req.userName)) {
-        emitSeq(List(UserLoggedOut(req.userName))) fby process(ServiceState(s.loggedUsers - req.userName))
-      } else {
-        doNothing(s)
-      }
-    }
-  }
+  def userStateProcess: Process[Task, Response] = ???
 
 }

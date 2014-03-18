@@ -5,10 +5,6 @@ import Process._
 import scalaz.concurrent.Task
 import scala.util.Random
 
-/**
- * Created by tomasherman on 16/03/14.
- */
-
 object Dojo extends Dojo
 
 trait Dojo {
@@ -27,7 +23,7 @@ trait Dojo {
     you can run the process in the Main.scala
    */
 
-  val simpleStream: Process[Task, String] = emit("hi mom").toSource //???
+  def simpleStream: Process[Task, String] = ???
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +39,7 @@ trait Dojo {
 
   val sampleInput = emitSeq(List.fill(10)(Random.nextInt())).toSource
 
-  val stringStream: Process[Task, String] = sampleInput.map(_.toString) //???
+  def stringStream: Process[Task, String] = ??? //sampleInput.map(_.toString) //???
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,9 +55,7 @@ trait Dojo {
 
   val sampleInput2 = emitSeq(List(1,2,3,0,2,-1,1,2)).toSource
 
-  def positiveStream = sampleInput2.flatMap { a => //???
-    if (a < 0) halt else emit(a)
-  }
+  def positiveStream = ???
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -84,9 +78,9 @@ trait Dojo {
 
   val sampleInput3 = emitSeq((0 to 10).toList).toSource
 
-  val p1Squares: Process1[Int,Int] = await1.map(a => a*a) // = ???
-  val p1SquaresRepeated: Process1[Int, Int] = p1Squares.repeat // = ???
-  val squaresStream = sampleInput3 |> p1SquaresRepeated
+  def p1Squares: Process1[Int,Int] = ???
+  def p1SquaresRepeated: Process1[Int, Int] = ???
+  def squaresStream = sampleInput3 |> p1SquaresRepeated
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -106,9 +100,9 @@ trait Dojo {
    */
 
   val sampleInput4 = emitSeq(List(1,2,3,4,-1,-2,-3,1)).toSource
-  val p: Process1[Int, Int] = await1[Int].flatMap{ a => if (a > 0) { emit(a) fby p } else { halt }} //???
+  def p: Process1[Int, Int] = ???
 
-  val combinedProcesses = sampleInput4 |> p
+  def combinedProcesses = sampleInput4 |> p
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -124,16 +118,9 @@ trait Dojo {
    */
   val sampleInput5 = emitSeq(List("uno", "dos", "tres", "cuatro", "cinco", "seis")).toSource
 
-  def indexer: Process1[String, (Int, String)] = { //???
-    def go(state: Int): Process1[String, (Int, String)] = {
-      await1[String].flatMap { s =>
-        emit(state -> s) fby go(state + 1)
-      }
-    }
-    go(0)
-  }
+  def indexer: Process1[String, (Int, String)] = ???
 
-  val statefulProcess1 = sampleInput5 |> indexer
+  def statefulProcess1 = sampleInput5 |> indexer
 
   /*
 
