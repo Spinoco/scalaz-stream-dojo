@@ -1,8 +1,10 @@
 package com.spinoco.dojo
 
 import scalaz.concurrent.Task
-import scalaz.stream.Process
+import scalaz.stream.{process1, Process}
 import Process._
+import scala.concurrent.duration._
+
 /*
   Time to put it all together.
 
@@ -16,10 +18,11 @@ import Process._
       (you can use 'authenticate' function to check if password is correct)
    - emit 'UserLoggedOut' if and only if user already logged in
 
-  hint: chances are, you will need a custom class that will represent state of the service with some helper methods so
-    dont be afraid of that
-
   the result you should expect when your code is correct is defiend in val 'expectedResult'
+
+  When you are done, what you can do is to use `fileWithRequests` instead of `requests` as input for your service. There
+  are some helper functions in scalaz library for working with input streams that might help you out. Notice how little code you
+  have to change to swap things around.
  */
 
 trait Request
@@ -32,9 +35,13 @@ case class UserLoggedOut(userName: String) extends Response
 
 object DojoService {
   import Utils._
-  def authenticate(username: String): Boolean = passwords.get(username).map(_ => true).getOrElse(false)
+  def authenticate(username: String, pass: String): Boolean = passwords.get(username).map(_ == pass).getOrElse(false)
   val parseRequests: (String) => Request = parseRequestsHelper _
+  val fileWithRequests = this.getClass.getResourceAsStream("/testData.txt")
+
+
   val requests: Process[Task, String] = mockRequests
+
 
   val expectedResult = Vector(
     UserLoggedIn("lister"),
@@ -45,35 +52,37 @@ object DojoService {
     UserLoggedOut("cat")
   )
 
-  val parsedRequests: Process[Task, Request] = mockRequests.map(parseRequests) // ???
-  val userStateProcess: Process[Task, Response] = parsedRequests |> state(State(Set.empty)) // ???
+  val parsedRequests: Process[Task, Request] = requests.map(parseRequests) // ???
 
-  def state(init: State ): Process1[Request, Response] = await1[Request].flatMap { r =>
-    val todo = r match {
-      case r: UserLogin => init.tryLogin(r)
-      case r: UserLogout => init.tryLogout(r)
+  val userStateProcess: Process[Task, Response] = parsedRequests.collect {
+      case m @ UserLogin(uname, upass) if authenticate(uname, upass) => m
+      case m: UserLogout => m
+    } |> ServiceState.process(ServiceState(Set.empty)) // ???
+
+
+  case class ServiceState(loggedUsers: Set[String])
+
+  object ServiceState {
+
+    def process(s: ServiceState): Process1[Request, Response] = await1[Request].flatMap {
+      case r: UserLogin =>  login(r, s)
+      case r: UserLogout => logout(r, s)
     }
-    emitSeq(todo._1) fby state(todo._2)
-  }
 
-  case class State(loggedUsers: Set[String]) {
-    def tryLogin(req: UserLogin): (Seq[Response], State) = {
-      if(loggedUsers.contains(req.userName)) {
-        (List(), this)
+    def doNothing(s: ServiceState) = emitSeq(List.empty[Response]) fby process(s)
+
+    def login(req: UserLogin, s: ServiceState) = {
+      if(s.loggedUsers.contains(req.userName)) {
+        doNothing(s)
       } else {
-        if(authenticate(req.userName)) {
-          (List(UserLoggedIn(req.userName)), State(loggedUsers + req.userName))
-        } else {
-          (List(), this)
-        }
+        emitSeq(List(UserLoggedIn(req.userName))) fby process(ServiceState(s.loggedUsers + req.userName))
       }
     }
-
-    def tryLogout(req: UserLogout): (Seq[Response], State) = {
-      if(loggedUsers.contains(req.userName)) {
-        (List(UserLoggedOut(req.userName)), State(loggedUsers - req.userName))
+    def logout(req: UserLogout, s: ServiceState) = {
+      if(s.loggedUsers.contains(req.userName)) {
+        emitSeq(List(UserLoggedOut(req.userName))) fby process(ServiceState(s.loggedUsers - req.userName))
       } else {
-        (List(), this)
+        doNothing(s)
       }
     }
   }

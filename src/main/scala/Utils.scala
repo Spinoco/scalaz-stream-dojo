@@ -27,6 +27,7 @@ object Utils {
   )).toSource
 
 
+
   def echo[A](prefix: String): Sink[Task, A] = Process.constant[A => Task[Unit]]({
     a: A => Task.now {println(s"$prefix -> $a")}
   })

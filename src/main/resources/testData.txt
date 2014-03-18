@@ -1,0 +1,10 @@
+login|lister|you
+login|cat|not
+logout|lister
+logout|lister
+login|cat|not
+login|kryten|que?
+login|polymorphe|himom!
+login|kryten|pass
+logout|kryten
+logout|cat"
