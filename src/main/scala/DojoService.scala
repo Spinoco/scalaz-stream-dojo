@@ -46,9 +46,7 @@ object DojoService {
   )
 
   val parsedRequests: Process[Task, Request] = mockRequests.map(parseRequests) // ???
-  val userStateProcess: Process[Task, Response] = parsedRequests |> state(State(Set.empty))
-
-
+  val userStateProcess: Process[Task, Response] = parsedRequests |> state(State(Set.empty)) // ???
 
   def state(init: State ): Process1[Request, Response] = await1[Request].flatMap { r =>
     val todo = r match {
