@@ -21,10 +21,12 @@ organization := "com.spinoco"
 resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases"
 
 libraryDependencies ++= Seq(
-  "org.scalaz.stream" %% "scalaz-stream" % "0.3.1",
+  "org.scalaz.stream" %% "scalaz-stream" % "snapshot-0.4",
   "org.specs2" %% "specs2" % "2.3.4" % "test"
 )
 
 mainClass := Some("com.spinoco.dojo.Main")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
+
+fork := true
